@@ -1,0 +1,34 @@
+import { createClient } from '@vercel/kv';
+
+export default async function handler(req, res) {
+  const { code } = req.query;
+  
+  try {
+    const kv = createClient({
+      url: process.env.KV_REST_API_URL,
+      token: process.env.KV_REST_API_TOKEN,
+    });
+
+    const data = await kv.get(code);
+
+    if (!data) {
+      return res.status(400).json({ success: false, message: "验证码无效或已过期" });
+    }
+
+    const { usedCount } = typeof data === 'string' ? JSON.parse(data) : data;
+
+    if (usedCount >= 3) {
+      return res.status(400).json({ success: false, message: "验证码使用次数已达上限" });
+    }
+
+    // 次数加1
+    await kv.set(code, JSON.stringify({ usedCount: usedCount + 1 }), { keepTTL: true });
+
+    res.status(200).json({ 
+      success: true, 
+      message: `验证通过，剩余次数: ${2 - usedCount}` 
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}
