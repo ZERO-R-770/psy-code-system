@@ -3,8 +3,10 @@ import { createClient } from '@vercel/kv';
 export default async function handler(req, res) {
   try {
     const kv = createClient({
-      url: process.env.KV_REST_API_URL,
+     const kv = createClient({
+      url: process.env.KV_REST_API_URL, 
       token: process.env.KV_REST_API_TOKEN,
+    });
     });
 
     const code = Math.floor(100000 + Math.random() * 900000).toString();
