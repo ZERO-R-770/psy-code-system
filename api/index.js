@@ -13,11 +13,7 @@ export default async function handler(req, res) {
     
     // 3. 存入数据库：24小时有效 (86400秒)，初始使用次数 0
     // 使用 JSON.stringify 确保存储格式统一
-   // 不要用 keepTTL 了，直接每次更新时都检查一下
-await kv.set(code, JSON.stringify({ usedCount: usedCount + 1 }), { 
-    get: true,      // 确保操作成功
-    ex: 86400       // 即使是更新次数，我们也重新声明它最多只能活 24 小时
-});
+    await kv.set(code, JSON.stringify({ usedCount: 0 }), { ex: 86400 });
 
     // 4. 返回成功响应
     return res.status(200).json({ 
