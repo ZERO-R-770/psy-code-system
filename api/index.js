@@ -13,7 +13,7 @@ export default async function handler(req, res) {
     
     // 3. 存入数据库：24小时有效 (86400秒)，初始使用次数 0
     // 使用 JSON.stringify 确保存储格式统一
-    await kv.set(code, JSON.stringify({ usedCount: 0 }), { ex: 10 });
+    await kv.set(code, JSON.stringify({ usedCount: 0 }), { ex: 86400 });
 
     // 4. 返回成功响应
     return res.status(200).json({ 
